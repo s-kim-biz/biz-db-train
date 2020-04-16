@@ -1,0 +1,15 @@
+
+
+/* Create Tables */
+
+-- this is sample table.
+CREATE TABLE SAMPLE
+(
+	SAMPLE_ID BIGINT NOT NULL AUTO_INCREMENT,
+	CREATED_AT DATETIME NOT NULL,
+	UPDATED_AT DATETIME NOT NULL,
+	PRIMARY KEY (SAMPLE_ID)
+) ENGINE = InnoDB COMMENT = 'サンプルのテーブル : this is sample table.';
+
+
+

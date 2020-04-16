@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+  mysql:
+    container_name: dbtrain-mysql
+    image: mysql:8
+    volumes:
+      - ./docker/mysql/init.d:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    ports:
+      - 43306:3306
+
+  git:
+    container_name: dbtrain-git
+    image: alpine/git
+    volumes:
+      - ./dbflute-maihamadb:/git/dbflute-maihamadb
+    command: clone https://github.com/dbflute-session/dbflute-hands-on.git dbflute-maihamadb
+    working_dir: /git
+
+  setup-sql-hands-on:
+    container_name: dbtrain-setup-sql-hands-on
+    image: maven:3-jdk-8
+    volumes:
+      - ./dbflute-maihamadb:/dbflute-maihamadb
+      - ./docker/setup-sql-hands-on/entrypoint.sh:/docker-entrypoint.sh
+    working_dir: /dbflute-maihamadb
+    entrypoint: /docker-entrypoint.sh
+    depends_on:
+      - mysql
+      - git
+
+  setup-plandb-hands-on:
+    container_name: dbtrain-setup-plandb-hands-on
+    image: alpine
+    volumes:
+      - ./:/src
+      - ./docker/setup-plandb-hands-on/entrypoint.sh:/docker-entrypoint.sh
+    entrypoint: /docker-entrypoint.sh
+    depends_on:
+      - mysql
+
+  update-twitterdb:
+    container_name: dbtrain-update-twitterdb
+    image: openjdk:8-alpine
+    volumes:
+      - ./:/src
+      - ./docker/update-twitterdb/entrypoint.sh:/docker-entrypoint.sh
+    entrypoint: /docker-entrypoint.sh
+    depends_on:
+      - mysql
+      - setup-plandb-hands-on

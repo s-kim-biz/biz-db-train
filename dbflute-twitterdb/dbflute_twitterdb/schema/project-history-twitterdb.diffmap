@@ -1,0 +1,126 @@
+map:{
+    ; 2020/04/16 07:40:20 = map:{
+        ; diffDate = 2020/04/16 07:40:20
+        ; diffAuthor = root
+        ; tableDiff = map:{
+            ; SAMPLE = map:{
+                ; tableName = SAMPLE
+                ; diffType = CHANGE
+                ; columnDiff = map:{
+                    ; CREATED_AT = map:{
+                        ; columnName = CREATED_AT
+                        ; diffType = ADD
+                    }
+                    ; UPDATED_AT = map:{
+                        ; columnName = UPDATED_AT
+                        ; diffType = ADD
+                    }
+                }
+            }
+        }
+    }
+    ; 2020/04/16 16:25:42 = map:{
+        ; diffDate = 2020/04/16 16:25:42
+        ; tableCount = map:{
+            ; next = 1
+            ; previous = 10
+        }
+        ; diffAuthor = shota.oda
+        ; tableDiff = map:{
+            ; SAMPLE = map:{
+                ; tableName = SAMPLE
+                ; diffType = ADD
+            }
+            ; ACCOUNT = map:{
+                ; tableName = ACCOUNT
+                ; diffType = DELETE
+            }
+            ; ATTACHMENT = map:{
+                ; tableName = ATTACHMENT
+                ; diffType = DELETE
+            }
+            ; CLS_TWEET_TYPE = map:{
+                ; tableName = CLS_TWEET_TYPE
+                ; diffType = DELETE
+            }
+            ; FAVOLITE = map:{
+                ; tableName = FAVOLITE
+                ; diffType = DELETE
+            }
+            ; FOLLOW = map:{
+                ; tableName = FOLLOW
+                ; diffType = DELETE
+            }
+            ; POST_CONTENT = map:{
+                ; tableName = POST_CONTENT
+                ; diffType = DELETE
+            }
+            ; REFRENCE_CONTENT = map:{
+                ; tableName = REFRENCE_CONTENT
+                ; diffType = DELETE
+            }
+            ; TWEET = map:{
+                ; tableName = TWEET
+                ; diffType = DELETE
+            }
+            ; TWEET_THREAD = map:{
+                ; tableName = TWEET_THREAD
+                ; diffType = DELETE
+            }
+            ; USER = map:{
+                ; tableName = USER
+                ; diffType = DELETE
+            }
+        }
+    }
+    ; 2020/04/16 16:07:34 = map:{
+        ; diffDate = 2020/04/16 16:07:34
+        ; tableCount = map:{
+            ; next = 10
+            ; previous = 0
+        }
+        ; diffAuthor = shota.oda
+        ; tableDiff = map:{
+            ; ACCOUNT = map:{
+                ; tableName = ACCOUNT
+                ; diffType = ADD
+            }
+            ; ATTACHMENT = map:{
+                ; tableName = ATTACHMENT
+                ; diffType = ADD
+            }
+            ; CLS_TWEET_TYPE = map:{
+                ; tableName = CLS_TWEET_TYPE
+                ; diffType = ADD
+            }
+            ; FAVOLITE = map:{
+                ; tableName = FAVOLITE
+                ; diffType = ADD
+            }
+            ; FOLLOW = map:{
+                ; tableName = FOLLOW
+                ; diffType = ADD
+            }
+            ; POST_CONTENT = map:{
+                ; tableName = POST_CONTENT
+                ; diffType = ADD
+            }
+            ; REFRENCE_CONTENT = map:{
+                ; tableName = REFRENCE_CONTENT
+                ; diffType = ADD
+            }
+            ; TWEET = map:{
+                ; tableName = TWEET
+                ; diffType = ADD
+            }
+            ; TWEET_THREAD = map:{
+                ; tableName = TWEET_THREAD
+                ; diffType = ADD
+            }
+            ; USER = map:{
+                ; tableName = USER
+                ; diffType = ADD
+            }
+        }
+    }
+}
