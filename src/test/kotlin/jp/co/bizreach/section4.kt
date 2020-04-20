@@ -24,8 +24,19 @@ class Section4 {
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
+select MEMBER.*,
+       MEMBER_LAST_LOGIN.LOGIN_DATETIME,
+       MEMBER_STATUS.MEMBER_STATUS_NAME as LOGIN_MEMBER_STATUS_NAME
 from MEMBER
+  inner join (
+      select * from MEMBER_LOGIN BASE where LOGIN_DATETIME = (
+            select max(SUB.LOGIN_DATETIME)
+            from MEMBER_LOGIN SUB
+            where SUB.MEMBER_ID = BASE.MEMBER_ID
+            group by MEMBER_ID
+      )
+  ) as MEMBER_LAST_LOGIN
+  inner join MEMBER_STATUS on (MEMBER_LAST_LOGIN.LOGIN_MEMBER_STATUS_CODE = MEMBER_STATUS.MEMBER_STATUS_CODE)
         """.fetch()
 
         // Assert:

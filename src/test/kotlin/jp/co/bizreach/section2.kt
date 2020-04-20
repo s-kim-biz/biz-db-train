@@ -27,8 +27,13 @@ class Section2 {
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
+select MEMBER.*, 
+       MEMBER_STATUS.*
 from MEMBER
+inner join MEMBER_STATUS using (MEMBER_STATUS_CODE)
+where MEMBER_NAME like 'S%'
+  and BIRTHDATE <= '1968-01-01'
+order by BIRTHDATE is null, BIRTHDATE
         """.fetch()
 
         // Assert:
@@ -55,8 +60,15 @@ from MEMBER
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
+select MEMBER.*, 
+       MEMBER_STATUS.*, 
+       MEMBER_SECURITY.*
 from MEMBER
+    inner join MEMBER_STATUS using (MEMBER_STATUS_CODE)
+    inner join MEMBER_SECURITY using (MEMBER_ID)
+order by BIRTHDATE is null,
+         BIRTHDATE desc,
+         MEMBER.MEMBER_ID
         """.fetch()
 
         // Assert:
@@ -84,8 +96,11 @@ from MEMBER
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
+select MEMBER.*, 
+       MEMBER_SECURITY.REMINDER_QUESTION
 from MEMBER
+  inner join MEMBER_SECURITY using (MEMBER_ID)
+where MEMBER_SECURITY.REMINDER_QUESTION like '%2%'
         """.fetch()
 
         // Assert:
@@ -118,6 +133,9 @@ from MEMBER
         val results = """
 select MEMBER.*
 from MEMBER
+  inner join MEMBER_STATUS using (MEMBER_STATUS_CODE)
+order by MEMBER_STATUS_CODE,
+         MEMBER.MEMBER_ID desc
         """.fetch()
 
         // Assert:
@@ -147,8 +165,19 @@ from MEMBER
         // Act:
         // language=SQL
         val results = """
-select PURCHASE.*
-from PURCHASE
+select PURCHASE.*,
+       PRODUCT.*,
+       MEMBER.*, 
+       MEMBER_STATUS.*
+from PRODUCT
+  inner join PURCHASE using (PRODUCT_ID)
+  inner join MEMBER using (MEMBER_ID)
+  inner join MEMBER_STATUS using (MEMBER_STATUS_CODE)
+where MEMBER.BIRTHDATE is not null
+order by PURCHASE.PURCHASE_DATETIME desc,
+         PRODUCT.REGULAR_PRICE desc, 
+         PRODUCT.PRODUCT_ID,
+         MEMBER.MEMBER_ID
         """.fetch()
 
         // Assert:
@@ -177,10 +206,14 @@ from PURCHASE
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
+select MEMBER.*, 
+       MEMBER_STATUS.MEMBER_STATUS_NAME
 from MEMBER 
-where :from <= UPDATE_DATETIME
-""".fetch("from" to fromParam)
+    inner join MEMBER_STATUS using (MEMBER_STATUS_CODE)
+where :from <= FORMALIZED_DATETIME
+  and MEMBER_NAME like '%vi%'
+  and FORMALIZED_DATETIME < :to
+""".fetch("from" to fromParam, "to" to toParam.plusDays(1))
 
         // Assert:
         assertStep6(results)
@@ -203,8 +236,18 @@ where :from <= UPDATE_DATETIME
         // Act:
         // language=SQL
         val results = """
-select PURCHASE.*
+select PURCHASE.*, 
+       CHILD.PRODUCT_CATEGORY_CODE as CHILD_CATEGORY_CODE,
+       CHILD.PRODUCT_CATEGORY_NAME as CHILD_CATEGORY_NAME,
+       PARENT.PRODUCT_CATEGORY_CODE as PARENT_CATEGORY_CODE,
+       PARENT.PRODUCT_CATEGORY_NAME as PARENT_CATEGORY_NAME
 from PURCHASE
+    inner join MEMBER using (MEMBER_ID)
+    inner join PRODUCT using (PRODUCT_ID)
+    inner join PRODUCT_CATEGORY CHILD using (PRODUCT_CATEGORY_CODE)
+    inner join PRODUCT_CATEGORY PARENT on (CHILD.PARENT_CATEGORY_CODE = PARENT.PRODUCT_CATEGORY_CODE)
+where FORMALIZED_DATETIME <= PURCHASE_DATETIME
+  and PURCHASE_DATETIME <= FORMALIZED_DATETIME + interval 7 day
         """.fetch()
 
         // Assert:
@@ -232,11 +275,14 @@ from PURCHASE
     fun step8() = DB.begin {
         // Arrange:
         // language=SQL
+        // language=SQL
         """
 insert into MEMBER (MEMBER_NAME, MEMBER_ACCOUNT, MEMBER_STATUS_CODE, BIRTHDATE, REGISTER_DATETIME, REGISTER_USER, UPDATE_DATETIME, UPDATE_USER, VERSION_NO) 
-values ('南壮一郎', 'swimmy', 'FML', '1976-09-09', current_date, 'manual:test', current_date, 'manual:test', 0) 
+values ('found', 'found', 'FML', '1974-12-31', current_date, 'test', current_date, 'test', 0), 
+       ('not found', 'not found', 'FML', '1975-01-01', current_date, 'test', current_date, 'test', 0);
         """.execute()
 
+        // Arrange:
         val parameter = LocalDate.of(1974, 1, 1)
 
         // Act:
@@ -244,8 +290,11 @@ values ('南壮一郎', 'swimmy', 'FML', '1976-09-09', current_date, 'manual:tes
         val results = """
 select *
 from MEMBER
-where MEMBER_ACCOUNT = 'swimmy'
-        """.fetch( /* "date" to parameter */)
+where MEMBER.BIRTHDATE is null 
+   or MEMBER.BIRTHDATE < date_format(:date + interval 1 year, '%Y-%m-01') 
+order by MEMBER.BIRTHDATE is not null,
+         MEMBER.BIRTHDATE desc
+        """.fetch("date" to parameter)
 
         // Assert:
         assertStep8(results)
@@ -276,7 +325,9 @@ where MEMBER_ACCOUNT = 'swimmy'
         val results = """
 select *
 from MEMBER
-        """.fetch(/* "date" to parameter */)
+where BIRTHDATE is null
+order by (:date <= FORMALIZED_DATETIME and FORMALIZED_DATETIME < date_format(:date + interval 1 month, '%Y-%m-01')) desc
+        """.fetch("date" to parameter)
 
         // Assert:
         assertStep9(results)

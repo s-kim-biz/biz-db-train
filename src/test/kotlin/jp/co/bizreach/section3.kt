@@ -30,6 +30,12 @@ class Section3 {
         val results = """
 select PURCHASE.*
 from PURCHASE
+    inner join PURCHASE_PAYMENT using (PURCHASE_ID)
+    inner join MEMBER using (MEMBER_ID)
+    inner join MEMBER_WITHDRAWAL using (MEMBER_ID)
+where PURCHASE.PAYMENT_COMPLETE_FLG = 0
+  and MEMBER.MEMBER_STATUS_CODE = 'WDL'
+order by PURCHASE.PURCHASE_DATETIME desc 
         """.fetch()
 
         // Assert:
@@ -58,8 +64,12 @@ from PURCHASE
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
+select MEMBER.*,
+       MEMBER_WITHDRAWAL.WITHDRAWAL_REASON_CODE,
+       MEMBER_WITHDRAWAL.WITHDRAWAL_REASON_INPUT_TEXT,
+       MEMBER_WITHDRAWAL.WITHDRAWAL_DATETIME
 from MEMBER
+left join MEMBER_WITHDRAWAL using (MEMBER_ID)
         """.fetch()
 
         // Assert:
@@ -87,6 +97,16 @@ from MEMBER
         val results = """
 select *
 from MEMBER
+where MEMBER_STATUS_CODE = 'PRV'
+  and BIRTHDATE = (
+  select
+    BIRTHDATE
+  from MEMBER
+  where MEMBER_STATUS_CODE = 'PRV'
+  order by BIRTHDATE is null,
+           BIRTHDATE desc
+  limit 1
+)
         """.fetch()
 
         // Assert:
@@ -115,6 +135,17 @@ from MEMBER
         val results = """
 select PURCHASE.*
 from PURCHASE
+  inner join MEMBER using (MEMBER_ID)
+where PAYMENT_COMPLETE_FLG = 1
+  and MEMBER_STATUS_CODE = 'FML'
+  and BIRTHDATE = (
+    select max(BIRTHDATE)
+    from MEMBER
+    inner join PURCHASE using (MEMBER_ID)
+    where PAYMENT_COMPLETE_FLG = 1 
+      and MEMBER_STATUS_CODE = 'FML'
+    limit 1
+  )
         """.fetch()
 
         // Assert:
@@ -144,6 +175,9 @@ from PURCHASE
         val results = """
 select *
 from PURCHASE
+    inner join PRODUCT using (PRODUCT_ID)
+where PRODUCT_STATUS_CODE = 'ONS'
+order by PURCHASE_PRICE desc
         """.fetch()
 
         // Assert:
@@ -173,7 +207,18 @@ from PURCHASE
         // language=SQL
         val results = """
 select * 
-from MEMBER
+from MEMBER BASE
+inner join (
+    select MEMBER_STATUS_CODE, max(BIRTHDATE) as BIRTHDATE
+    from MEMBER SUB
+        inner join PURCHASE using (MEMBER_ID)
+        inner join PURCHASE_PAYMENT using (PURCHASE_ID)
+    where PAYMENT_METHOD_CODE = 'BAK'
+    group by MEMBER_STATUS_CODE
+) YOUNGEST on (
+  BASE.MEMBER_STATUS_CODE = YOUNGEST.MEMBER_STATUS_CODE
+  and BASE.BIRTHDATE = YOUNGEST.BIRTHDATE
+)
         """.fetch()
 
         // Assert:
@@ -203,6 +248,8 @@ from MEMBER
         val results = """
 select * 
 from MEMBER
+  inner join PURCHASE using (MEMBER_ID)
+where PAYMENT_COMPLETE_FLG = 0
         """.fetch()
 
         // Assert:

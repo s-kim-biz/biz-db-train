@@ -27,6 +27,8 @@ class Section1 {
         val results = """
 select *
 from MEMBER
+where MEMBER_NAME like 's%'
+order by MEMBER_NAME
         """.fetch()
 
         // Assert:
@@ -56,6 +58,7 @@ from MEMBER
         val results = """
 select * 
 from MEMBER
+where MEMBER_ID = 1
         """.fetch()
 
         // Assert:
@@ -84,6 +87,8 @@ from MEMBER
         val results = """
 select * 
 from MEMBER
+where BIRTHDATE is null
+order by UPDATE_DATETIME desc
         """.fetch()
 
         // Assert:
