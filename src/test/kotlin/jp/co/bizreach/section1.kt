@@ -87,6 +87,7 @@ where MEMBER.MEMBER_ID = 1
         val results = """
 select * 
 from MEMBER
+where MEMBER.BIRTHDATE = null
         """.fetch()
 
         // Assert:
