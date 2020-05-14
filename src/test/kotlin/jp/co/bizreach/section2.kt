@@ -92,8 +92,14 @@ case when MEMBER.BIRTHDATE is null then MEMBER.MEMBER_ID end asc
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
-from MEMBER
+select MEMBER.* , MEMBER_SECURITY.REMINDER_QUESTION
+from MEMBER join MEMBER_SECURITY
+on MEMBER.MEMBER_ID = MEMBER_SECURITY.MEMBER_ID
+and MEMBER.MEMBER_ID in (
+select MEMBER_SECURITY.MEMBER_ID
+from MEMBER_SECURITY
+where MEMBER_SECURITY.REMINDER_QUESTION like '%2%'
+)
         """.fetch()
 
         // Assert:
