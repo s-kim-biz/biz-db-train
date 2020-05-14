@@ -131,7 +131,9 @@ where MEMBER_SECURITY.REMINDER_QUESTION like '%2%'
         // language=SQL
         val results = """
 select MEMBER.*
-from MEMBER
+from MEMBER join MEMBER_STATUS
+where MEMBER.MEMBER_STATUS_CODE = MEMBER_STATUS.MEMBER_STATUS_CODE
+order by MEMBER_STATUS.MEMBER_STATUS_CODE asc, MEMBER.MEMBER_ID desc
         """.fetch()
 
         // Assert:
