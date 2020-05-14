@@ -31,6 +31,7 @@ select MEMBER.*, MEMBER_STATUS.*
 from MEMBER join MEMBER_STATUS
 on MEMBER.MEMBER_STATUS_CODE = MEMBER_STATUS.MEMBER_STATUS_CODE
 where MEMBER.MEMBER_NAME like 'S%' and MEMBER.BIRTHDATE <= '1968-01-01'
+order by MEMBER.BIRTHDATE asc
         """.fetch()
 
         // Assert:
@@ -57,8 +58,13 @@ where MEMBER.MEMBER_NAME like 'S%' and MEMBER.BIRTHDATE <= '1968-01-01'
         // Act:
         // language=SQL
         val results = """
-select MEMBER.*
-from MEMBER
+select MEMBER.*, MEMBER_STATUS.*, MEMBER_SECURITY.*
+from MEMBER join MEMBER_STATUS
+on MEMBER.MEMBER_STATUS_CODE = MEMBER_STATUS.MEMBER_STATUS_CODE 
+right join MEMBER_SECURITY
+on MEMBER.MEMBER_ID = MEMBER_SECURITY.MEMBER_ID
+order by MEMBER.BIRTHDATE desc,
+case when MEMBER.BIRTHDATE is null then MEMBER.MEMBER_ID end asc
         """.fetch()
 
         // Assert:
